@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ### 1. 技术栈选择
 
 - **核心框架**: Spring Boot 3.2.x + Spring Cloud 2023.0.x
@@ -115,3 +116,6 @@ auth-service/
 - 个人资料维护
 - 账户状态管理
 - 审计日志记录
+=======
+# happy-learning-java
+>>>>>>> develop
