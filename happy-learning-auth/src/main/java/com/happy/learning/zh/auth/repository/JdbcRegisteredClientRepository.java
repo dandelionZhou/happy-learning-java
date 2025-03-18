@@ -1,4 +1,4 @@
-package com.happy.learning.zh.auth.config;
+package com.happy.learning.zh.auth.repository;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -39,7 +39,7 @@ public class JdbcRegisteredClientRepository implements RegisteredClientRepositor
     @Override
     public RegisteredClient findById(String id) {
         // 根据 ID 查询实现
-        OAuth2Client auth2Client = clientMapper.findByClientId(id);
+        OAuth2Client auth2Client = clientMapper.selectById(id);
         return convertToRegisteredClient(auth2Client);
     }
 
