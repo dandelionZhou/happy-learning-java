@@ -86,12 +86,10 @@ public class AuthorizationServerConfig {
 
             // 存储到 Redis（通过 OptimizedRedisOAuth2AuthorizationService）
             redisAuthService.storeJti(jti, context.getPrincipal().getName());*/
-            if (context.getTokenType() == OAuth2TokenType.ACCESS_TOKEN) {
+            /*if (context.getTokenType() == OAuth2TokenType.ACCESS_TOKEN) {
                 Authentication principal = context.getPrincipal();
                 context.getClaims().claim("phone", principal.getName());
-            }
-            context.getClaims().claim("tenant_id", "123456").claim("uid", "1") // ✅ 添加自定义 Claims
-                    .claim("roles", "admin,user").claim("jti", jti); // ✅ 添加角色信息
+            }*/
 
             Authentication principal = context.getPrincipal();
             if (context.getTokenType().getValue().equals(OAuth2TokenType.ACCESS_TOKEN.getValue())) {
