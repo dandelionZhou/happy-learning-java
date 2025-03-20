@@ -20,6 +20,8 @@ import org.springframework.security.oauth2.server.authorization.authentication.O
 import org.springframework.security.oauth2.server.authorization.authentication.OAuth2ClientAuthenticationToken;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
+import org.springframework.security.oauth2.server.authorization.context.AuthorizationServerContextHolder;
+import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.oauth2.server.authorization.token.DefaultOAuth2TokenContext;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenContext;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenGenerator;
@@ -44,7 +46,8 @@ public class SmsCodeAuthenticationProvider implements AuthenticationProvider {
             UserDetailsService userDetailsService,
             RegisteredClientRepository registeredClientRepository,
             OAuth2AuthorizationService authorizationService,
-            OAuth2TokenGenerator<? extends OAuth2Token> tokenGenerator) {
+            OAuth2TokenGenerator<? extends OAuth2Token> tokenGenerator,
+            AuthorizationServerSettings authorizationServerSettings) {
         this.smsCodeService = smsCodeService;
         this.userDetailsService = userDetailsService;
         this.registeredClientRepository = registeredClientRepository;
@@ -90,6 +93,7 @@ public class SmsCodeAuthenticationProvider implements AuthenticationProvider {
                 .authorizationGrantType(new AuthorizationGrantType("sms_code"))
                 .authorizedScopes(registeredClient.getScopes())
                 .tokenType(OAuth2TokenType.ACCESS_TOKEN)
+                .authorizationServerContext(AuthorizationServerContextHolder.getContext())
                 .build();
 
         // 生成原始令牌
