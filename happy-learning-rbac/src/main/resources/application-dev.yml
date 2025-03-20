@@ -1,0 +1,8 @@
+resource:
+  service:
+    url: http://localhost:8080
+
+rbac:
+  notify:
+    http:
+      endpoints: test

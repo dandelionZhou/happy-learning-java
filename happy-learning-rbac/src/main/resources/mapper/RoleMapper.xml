@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.happy.learning.zh.rbac.mapper.RoleMapper">
+    <!-- 用户基础字段映射 -->
+    <resultMap id="userResultMap" type="com.happy.learning.zh.rbac.entity.User">
+        <id column="user_id" property="id"/>
+        <result column="username" property="username"/>
+        <result column="password" property="password"/>
+        <result column="phone" property="phone"/>
+        <result column="email" property="email"/>
+        <result column="enabled" property="enabled"/>
+        <collection property="roles" ofType="com.happy.learning.zh.rbac.entity.Role"
+                    resultMap="roleResultMap"/>
+    </resultMap>
+
+    <!-- 角色字段映射 -->
+    <resultMap id="roleResultMap" type="com.happy.learning.zh.rbac.entity.Role">
+        <id column="role_id" property="id"/>
+        <result column="name" property="name"/>
+        <collection property="permissions" ofType="com.happy.learning.zh.rbac.entity.Permission">
+            <id column="perm_id" property="id"/>
+            <result column="name" property="name"/>
+            <result column="value" property="value"/>
+        </collection>
+    </resultMap>
+
+    <!-- 核心查询 SQL -->
+    <select id="findPermissionsByRoleName" resultType="string">
+        select tup.value as permission from t_user_role tur
+        left join t_user_role_permission_relation turpr on tur.id = turpr.role_id
+        left join t_user_permission tup on turpr.permission_id  = tup.id
+        where tur.name = #{roleName};
+    </select>
+
+    <select id="findPermissionsByRoles" resultType="string">
+        select tup.value as permission from t_user_role tur
+        left join t_user_role_permission_relation turpr on tur.id = turpr.role_id
+        left join t_user_permission tup on turpr.permission_id  = tup.id
+        where tur.name in
+        <foreach collection="roles" item="role" open="(" close=")" separator=",">
+            #{role}
+        </foreach>
+    </select>
+
+    <update id="updatePermissionsByRole" parameterType="com.happy.learning.zh.rbac.entity.Role">
+        insert into t_user_role_permission_relation(role_id, permission_id)
+        values
+        <foreach collection="role.permissions" separator=","  item="p">
+            (#{role.id}, #{p.id})
+        </foreach>
+    </update>
+
+    <delete id="deletePermissionsByRole" parameterType="com.happy.learning.zh.rbac.entity.Role">
+        delete from t_user_role_permission_relation where role_id = #{role.id}
+    </delete>
+
+    <select id="findUsersByRoleId" resultType="string">
+        select DISTINCT user_id from t_user_role_relation where role_id  = #{roleId}
+    </select>
+</mapper>
