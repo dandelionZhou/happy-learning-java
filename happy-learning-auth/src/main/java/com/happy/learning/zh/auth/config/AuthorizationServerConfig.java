@@ -67,14 +67,10 @@ public class AuthorizationServerConfig {
     }
 
     @Bean
-    public OAuth2TokenGenerator<?> tokenGenerator(JwtEncoder jwtEncoder, OAuth2TokenCustomizer<JwtEncodingContext> tokenCustomizer) {
+    public OAuth2TokenGenerator<?> jwtTokenGenerator(JwtEncoder jwtEncoder, OAuth2TokenCustomizer<JwtEncodingContext> tokenCustomizer) {
         JwtGenerator jwtGenerator = new JwtGenerator(jwtEncoder);
         jwtGenerator.setJwtCustomizer(tokenCustomizer);
-        OAuth2AccessTokenGenerator accessTokenGenerator = new OAuth2AccessTokenGenerator();
-        OAuth2RefreshTokenGenerator refreshTokenGenerator = new OAuth2RefreshTokenGenerator();
-        return new DelegatingOAuth2TokenGenerator(
-                jwtGenerator, accessTokenGenerator, refreshTokenGenerator
-        );
+        return jwtGenerator;
     }
 
     @Bean

@@ -11,6 +11,6 @@ public class User {
     private String password;
     private String phone;
     private String email;
-    private Boolean enabled;
+    private boolean enabled = true;
     private List<Role> roles;
 }

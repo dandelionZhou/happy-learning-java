@@ -119,9 +119,23 @@ public class JdbcRegisteredClientRepository implements RegisteredClientRepositor
 
             if (settings.containsKey(ConfigurationSettingNames.Token.ACCESS_TOKEN_TIME_TO_LIVE)) {
                 Long tokenExpire = Long.parseLong(settings.get(ConfigurationSettingNames.Token.ACCESS_TOKEN_TIME_TO_LIVE).toString());
-                settings.put(ConfigurationSettingNames.Token.ACCESS_TOKEN_TIME_TO_LIVE, Duration.ofDays(tokenExpire));
+                settings.put(ConfigurationSettingNames.Token.ACCESS_TOKEN_TIME_TO_LIVE, Duration.ofSeconds(tokenExpire));
             } else {
-                settings.put(ConfigurationSettingNames.Token.ACCESS_TOKEN_TIME_TO_LIVE, Duration.ofDays(7));
+                settings.put(ConfigurationSettingNames.Token.ACCESS_TOKEN_TIME_TO_LIVE, Duration.ofHours(1));
+            }
+
+            if (settings.containsKey(ConfigurationSettingNames.Token.AUTHORIZATION_CODE_TIME_TO_LIVE)) {
+                Long codeExpire = Long.parseLong(settings.get(ConfigurationSettingNames.Token.AUTHORIZATION_CODE_TIME_TO_LIVE).toString());
+                settings.put(ConfigurationSettingNames.Token.AUTHORIZATION_CODE_TIME_TO_LIVE, Duration.ofMinutes(codeExpire));
+            } else {
+                settings.put(ConfigurationSettingNames.Token.AUTHORIZATION_CODE_TIME_TO_LIVE, Duration.ofMinutes(10));
+            }
+
+            if (settings.containsKey(ConfigurationSettingNames.Token.REFRESH_TOKEN_TIME_TO_LIVE)) {
+                Long tokenExpire = Long.parseLong(settings.get(ConfigurationSettingNames.Token.REFRESH_TOKEN_TIME_TO_LIVE).toString());
+                settings.put(ConfigurationSettingNames.Token.REFRESH_TOKEN_TIME_TO_LIVE, Duration.ofDays(tokenExpire));
+            } else {
+                settings.put(ConfigurationSettingNames.Token.REFRESH_TOKEN_TIME_TO_LIVE, Duration.ofDays(30));
             }
 
             return TokenSettings.withSettings(settings).build();

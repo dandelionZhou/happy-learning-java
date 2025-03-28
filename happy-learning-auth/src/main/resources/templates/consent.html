@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>授权确认</title>
+</head>
+<body>
+<h3>客户端 [[${clientId}]] 请求以下权限：</h3>
+<form method="post" th:action="@{/oauth2/authorize}">
+  <input type="hidden" name="client_id" th:value="${clientId}">
+  <input type="hidden" name="state" th:value="${state}">
+
+  <div th:each="scope : ${scopes}">
+    <input type="checkbox" name="scope" th:value="${scope}" checked> [[${scope}]]
+  </div>
+
+  <button type="submit" name="user_oauth_approval" value="true">同意授权</button>
+  <button type="submit" name="user_oauth_approval" value="false">拒绝</button>
+</form>
+</body>
+</html>

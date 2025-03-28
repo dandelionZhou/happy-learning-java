@@ -23,6 +23,7 @@ import org.springframework.security.oauth2.server.authorization.client.Registere
 import org.springframework.security.oauth2.server.authorization.context.AuthorizationServerContextHolder;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.oauth2.server.authorization.token.DefaultOAuth2TokenContext;
+import org.springframework.security.oauth2.server.authorization.token.JwtGenerator;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenContext;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenGenerator;
 import org.springframework.stereotype.Component;
@@ -38,7 +39,7 @@ public class SmsCodeAuthenticationProvider implements AuthenticationProvider {
     private final UserDetailsService userDetailsService;
     private final RegisteredClientRepository registeredClientRepository;
     private final OAuth2AuthorizationService authorizationService;
-    private final OAuth2TokenGenerator<? extends OAuth2Token> tokenGenerator;
+    private final JwtGenerator jwtGenerator;
 
     @Autowired
     public SmsCodeAuthenticationProvider(
@@ -46,13 +47,13 @@ public class SmsCodeAuthenticationProvider implements AuthenticationProvider {
             UserDetailsService userDetailsService,
             RegisteredClientRepository registeredClientRepository,
             OAuth2AuthorizationService authorizationService,
-            OAuth2TokenGenerator<? extends OAuth2Token> tokenGenerator,
+            JwtGenerator jwtGenerator,
             AuthorizationServerSettings authorizationServerSettings) {
         this.smsCodeService = smsCodeService;
         this.userDetailsService = userDetailsService;
         this.registeredClientRepository = registeredClientRepository;
         this.authorizationService = authorizationService;
-        this.tokenGenerator = tokenGenerator;
+        this.jwtGenerator = jwtGenerator;
     }
 
     @Override
@@ -97,7 +98,7 @@ public class SmsCodeAuthenticationProvider implements AuthenticationProvider {
                 .build();
 
         // 生成原始令牌
-        OAuth2Token generatedToken = this.tokenGenerator.generate(tokenContext);
+        OAuth2Token generatedToken = this.jwtGenerator.generate(tokenContext);
         if (generatedToken == null || !(generatedToken instanceof Jwt)) {
             throw new OAuth2AuthenticationException(OAuth2ErrorCodes.SERVER_ERROR);
         }

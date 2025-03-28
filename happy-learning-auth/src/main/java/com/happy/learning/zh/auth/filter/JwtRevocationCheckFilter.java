@@ -5,10 +5,12 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtException;
+import org.springframework.security.oauth2.server.resource.InvalidBearerTokenException;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -18,11 +20,14 @@ public class JwtRevocationCheckFilter extends OncePerRequestFilter {
 
     private final JwtDecoder jwtDecoder;
     private final TokenBlacklistService blacklistService;
+    private final StringRedisTemplate stringRedisTemplate;
 
     public JwtRevocationCheckFilter(JwtDecoder jwtDecoder,
-                                    TokenBlacklistService blacklistService) {
+                                    TokenBlacklistService blacklistService,
+                                    StringRedisTemplate stringRedisTemplate) {
         this.jwtDecoder = jwtDecoder;
         this.blacklistService = blacklistService;
+        this.stringRedisTemplate = stringRedisTemplate;
     }
 
     @Override
@@ -33,9 +38,18 @@ public class JwtRevocationCheckFilter extends OncePerRequestFilter {
         if (token != null) {
             try {
                 Jwt jwt = jwtDecoder.decode(token);
-                if (blacklistService.isRevoked(jwt.getId())) {
+                /*if (blacklistService.isRevoked(jwt.getId())) {
                     throw new JwtException("Token revoked");
+                }*/
+                String jti = jwt.getId();
+                String userId = jwt.getClaimAsString("uid");
+
+                // 关键检查：是否为用户最新 Token
+                String latestAuthId = stringRedisTemplate.opsForValue().get("oauth2:user_latest_auth:" + userId);
+                if (latestAuthId == null || !latestAuthId.equals(jti)) {
+                    throw new InvalidBearerTokenException("Token 已被新登录失效");
                 }
+
             } catch (JwtException e) {
                 handleAuthenticationFailure(response, e.getMessage());
                 return;

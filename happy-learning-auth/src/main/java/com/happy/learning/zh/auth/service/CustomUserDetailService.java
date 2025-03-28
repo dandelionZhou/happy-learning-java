@@ -9,6 +9,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.LinkedHashSet;
@@ -19,6 +21,8 @@ import java.util.Set;
 public class CustomUserDetailService implements UserDetailsService {
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -26,6 +30,7 @@ public class CustomUserDetailService implements UserDetailsService {
         if (users.isEmpty()) {
             throw new UsernameNotFoundException("用户不存在");
         }
+        //System.out.println(passwordEncoder.encode("123456"));
         // MyBatis 会自动合并多条记录为一个 User 对象
         return convertToUserDetails(users.get(0));
     }
@@ -47,7 +52,7 @@ public class CustomUserDetailService implements UserDetailsService {
                 user.getId(),
                 user.getUsername(),
                 user.getPassword(),
-                user.getEnabled(),
+                user.isEnabled(),
                 authorities
         );
     }
