@@ -3,6 +3,27 @@ server:
   port: 8080
 
 spring:
+  application:
+    name: happy-resource
+  profiles:
+      active: dev
+  config:
+      import:
+        - nacos:${spring.application.name}-${spring.profiles.active}.${spring.cloud.nacos.config.file-extension}  # 动态匹配 Data ID
+  cloud:
+    nacos:
+      config:
+        namespace: a85fe318-5dd4-47bf-873b-0534e039323a
+        server-addr: 114.132.96.71:8848
+        file-extension: yaml         # 配置文件格式
+        group: DEFAULT_GROUP
+        username: nacos
+        password: nacos
+      discovery:
+        server-addr: 114.132.96.71:8848
+        namespace: a85fe318-5dd4-47bf-873b-0534e039323a
+        username: nacos
+        password: nacos
   security:
     oauth2:
       authorization-server:
