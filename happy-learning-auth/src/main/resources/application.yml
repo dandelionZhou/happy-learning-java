@@ -2,11 +2,33 @@
 server:
   port: 9000
 
+
 spring:
+  application:
+    name: happy-auth
+  profiles:
+    active: dev
+  config:
+    import:
+      - nacos:${spring.application.name}-${spring.profiles.active}.${spring.cloud.nacos.config.file-extension}  # 动态匹配 Data ID
+  cloud:
+    nacos:
+      config:
+        namespace: a85fe318-5dd4-47bf-873b-0534e039323a
+        server-addr: 114.132.96.71:8848
+        file-extension: yaml         # 配置文件格式
+        group: DEFAULT_GROUP
+        username: nacos
+        password: nacos
+      discovery:
+        server-addr: 114.132.96.71:8848
+        namespace: a85fe318-5dd4-47bf-873b-0534e039323a
+        username: nacos
+        password: nacos
   security:
     oauth2:
       authorization-server:
-        issuer-uri: http://localhost:9000
+        issuer: http://localhost:9000
   datasource:
     url: jdbc:mysql://114.132.96.71:3306/happy_life?useSSL=false&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true&tinyInt1isBit=false&allowMultiQueries=true&serverTimezone=GMT%2B8&allowPublicKeyRetrieval=true
     username: dev
@@ -19,14 +41,14 @@ spring:
       database: 0
       ssl:
         enabled: false
-      timeout: 3000ms
+      timeout: 5000
       lettuce:
         pool:
           max-active: 8
-          max-wait: -1ms
-          max-idle: 8
+          max-wait: 5000
+          max-idle: 5
           min-idle: 0
-        shutdown-timeout: 100ms
+        shutdown-timeout: 5000
       # 新增客户端类型配置（Spring Boot 2.3+ 需要）
       client-type: lettuce
 
@@ -40,3 +62,7 @@ logging:
   level:
     org.springframework.security: DEBUG
     com.happy.learning: TRACE
+    org.springframework.data.redis: DEBUG
+    org.springframework.web: DEBUG
+    org.springframework.oauth2: TRACE
+    org.springframework.security.web.FilterChainProxy: DEBUG
